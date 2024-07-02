@@ -14,7 +14,7 @@ from pathlib import Path
 # import django_heroku
 # import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -82,16 +82,16 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 from dotenv import load_dotenv
 import os
 
-# Base directory of your project
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env file
+
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-# Now you can access the environment variable
+
 OPENWEATHERMAP_API_KEY = os.getenv('OPENWEATHERMAP_API_KEY')
 
-# Other settings...
+
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
