@@ -16,7 +16,7 @@ def hello(request):
     try:
         response = requests.get(f'http://ipinfo.io/{client_ip}/json')
         data = response.json()
-        location = data.get('city')  
+        location = data.get('city', 'Lagos')  
     except requests.RequestException:
         location = 'Unknown'
 
