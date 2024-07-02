@@ -9,14 +9,14 @@ def hello(request):
     visitor_name = request.GET.get('visitor_name', 'Mark')
 
     
-    client_ip = '102.89.33.134'
+    client_ip = '102.88.82.151'
 
     
     location = 'Unknown'
     try:
         response = requests.get(f'http://ipinfo.io/{client_ip}/json')
         data = response.json()
-        location = data.get('city', 'Ashburn')  
+        location = data.get('city')  
     except requests.RequestException:
         location = 'Unknown'
 
