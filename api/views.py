@@ -1,17 +1,14 @@
-# myapp/views.py
-
 from django.http import JsonResponse
 import requests
 import os
 
 def hello(request):
-    
     visitor_name = request.GET.get('visitor_name', 'Mark')
 
-    
+   
     client_ip = '102.88.82.151'
 
-    
+  
     location = 'Unknown'
     try:
         response = requests.get(f'http://ipinfo.io/{client_ip}/json')
@@ -22,11 +19,7 @@ def hello(request):
 
     
     temperature = "unknown"
-
-    
     weather_api_key = os.getenv('OPENWEATHERMAP_API_KEY')
-    
-
     if location != 'Unknown' and weather_api_key:
         try:
             weather_response = requests.get(f'http://api.openweathermap.org/data/2.5/weather?q={location}&units=metric&appid={weather_api_key}')
@@ -36,14 +29,15 @@ def hello(request):
         except requests.RequestException:
             temperature = 'unknown'
 
-  
-    greeting = f"Hello {visitor_name}! the temperature is {temperature} degrees Celsius in {location}"
+    
+    greeting = f"Hello {visitor_name}! The temperature is {temperature} degrees Celsius in {location}"
 
     
-    response_data = {
-        'client_ip': client_ip,
-        'location': location,
-        'greetings': greeting,
+    formatted_response = {
+        'yourAPIResponse': greeting,
+        'Remark': f"IP: {client_ip}, Location: {location}",
+        'score': 1,  
+        'feedback': "Success"
     }
 
-    return JsonResponse(response_data)
+    return JsonResponse(formatted_response)
