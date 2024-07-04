@@ -1,43 +1,58 @@
-from django.http import JsonResponse
 import requests
-import os
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-def hello(request):
+@api_view(['GET'])
+def temperature(request):
     visitor_name = request.GET.get('visitor_name', 'Mark')
 
-   
-    client_ip = '102.88.82.151'
+    # Get client's external IP address from request headers
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        client_ip = x_forwarded_for.split(',')[0]
+        print(client_ip)
+    else:
+        client_ip = request.META.get('REMOTE_ADDR')
+        print('error')
 
-  
-    location = 'Unknown'
-    try:
-        response = requests.get(f'http://ipinfo.io/{client_ip}/json')
-        data = response.json()
-        location = data.get('city', 'Lagos')  
-    except requests.RequestException:
-        location = 'Unknown'
-
-    
-    temperature = "unknown"
-    weather_api_key = os.getenv('OPENWEATHERMAP_API_KEY')
-    if location != 'Unknown' and weather_api_key:
+    # Fetch location based on IP
+    if client_ip:
         try:
-            weather_response = requests.get(f'http://api.openweathermap.org/data/2.5/weather?q={location}&units=metric&appid={weather_api_key}')
-            weather_data = weather_response.json()
-            if weather_data.get('cod') == 200:  
-                temperature = weather_data['main'].get('temp', 'unknown')
-        except requests.RequestException:
-            temperature = 'unknown'
+            ip_info_response = requests.get(f'http://ipinfo.io/{client_ip}')
+            ip_info_response.raise_for_status()  # Check for HTTP errors
+            ip_info_data = ip_info_response.json()
+            location = ip_info_data.get('city', 'Unknown Location')
+            print(f'IP Info response: {ip_info_data}')  # Debug print entire response
+        except requests.RequestException as e:
+            print(f'Error fetching IP info: {e}')  # Debug print error
+            location = 'Unknown Location'
 
-    
-    greeting = f"Hello {visitor_name}! The temperature is {temperature} degrees Celsius in {location}"
+        # Fetch temperature for the location
+        if location != 'Unknown Location':
+            try:
+                weather_response = requests.get(
+                    f'http://api.openweathermap.org/data/2.5/weather?q={location}&appid=43e769b33eb4f77f65c367a2670055cc&units=metric'
+                )
+                weather_response.raise_for_status()  # Check for HTTP errors
+                weather_data = weather_response.json()
+                temperature = weather_data.get('main', {}).get('temp', 'Unknown')
+                print(f'Weather response: {weather_data}')  # Debug print entire response
+            except requests.RequestException as e:
+                print(f'Error fetching weather data: {e}')  # Debug print error
+                temperature = 'Unknown'
+        else:
+            temperature = 'Unknown'
+    else:
+        location = 'Unknown Location'
+        temperature = 'Unknown'
 
-    
-    formatted_response = {
-        'yourAPIResponse': greeting,
-        'Remark': f"IP: {client_ip}, Location: {location}",
-        'score': 1,  
-        'feedback': "Success"
+    # Construct response data
+    response_data = {
+        'client_ip': client_ip,
+        'location': location,
+        'greeting': f'Hello, {visitor_name}, the temperature is {temperature} degrees Celsius in {location}'
     }
 
-    return JsonResponse(formatted_response)
+    print(f'Response data: {response_data}')  # Debug print response data
+
+    return Response(response_data)
