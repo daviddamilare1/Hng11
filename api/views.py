@@ -21,7 +21,7 @@ def temperature(request):
             location = ip_info_data.get('city', location)
 
             # Fetch temperature for the location
-            weather_api_key = 'your_openweathermap_api_key_here'  # Replace with your OpenWeatherMap API key
+            weather_api_key = 'def5a426fe74ee7e6749406e70be6c91'  # Replace with your OpenWeatherMap API key
             weather_response = requests.get(
                 f'http://api.openweathermap.org/data/2.5/weather?q={location}&appid={weather_api_key}&units=metric'
             )
