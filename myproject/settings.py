@@ -81,6 +81,7 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 from dotenv import load_dotenv
 import os
