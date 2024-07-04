@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 @api_view(['GET'])
-def temperature(request):
+def hello(request):
     visitor_name = request.GET.get('visitor_name', 'Mark')
 
     # Get client's external IP address from request headers
